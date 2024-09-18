@@ -5,7 +5,6 @@ from tkinter import *
 import customtkinter as ctk
 from datetime import datetime
 import time
-import timePy
 import asyncio
 import imagetk
 from PIL import Image, ImageTk
