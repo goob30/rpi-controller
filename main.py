@@ -43,6 +43,15 @@ def update_time():
    #hourLabel.configure(text=current_hours)
     #root.after(1000, update_hours)
 
+rainy = False
+drizzle = False
+cloudy = False
+sunny = False
+
+
+
+
+
 root = ctk.CTk()
 root.geometry("800x480")
 
@@ -51,8 +60,8 @@ root.geometry("800x480")
 currentTemp = round(w.current_temperature_2m)
 currentAppTemp = round(w.current_apparent_temperature)
 
-cloudyIconIm = Image.open("icon/cloud.png")
-cloudyIcon = ImageTk.PhotoImage(cloudyIconIm)
+weatherIconIm = Image.open("icon/cloud-rain.png")
+weatherIcon = ImageTk.PhotoImage(weatherIconIm)
 settingsIconIm = Image.open("icon/settings.png")
 settingsIcon = ImageTk.PhotoImage(settingsIconIm)
 clockIconIm = Image.open("icon/clock.png")
@@ -72,20 +81,48 @@ monitorIcon = ImageTk.PhotoImage(monitorIconIm)
 homeIconIm = Image.open("icon/smallHome.png")
 homeIcon = ImageTk.PhotoImage(homeIconIm)
 
+def updateWeather():
+
+    rainy = False
+    drizzle = False
+    cloudy = False
+    clear = False
+    if w.current_cloud_cover < 50:
+        clear = True
+    elif w.current_cloud_cover > 50:
+        cloudy = True
+    elif w.current_rain < 0.1:
+        drizzle = True
+    elif w.current_rain > 0.1:
+        rainy = True
+    print(rainy, drizzle, cloudy, clear)
+    if clear:
+        weatherIconIm = Image.open("icon/sun.png")
+        weatherIcon = ImageTk.PhotoImage(weatherIconIm)
+    elif cloudy:
+        weatherIconIm = Image.open("icon/cloud.png")
+        weatherIcon = ImageTk.PhotoImage(weatherIconIm)
+    elif drizzle:
+        weatherIconIm = Image.open("icon/cloud-drizzle.png")
+        weatherIcon = ImageTk.PhotoImage(weatherIconIm)
+    elif rainy:
+        weatherIconIm = Image.open("icon/cloud-rain.png")
+        weatherIcon = ImageTk.PhotoImage(weatherIconIm)
+
 #home frame
 homeFrame = ctk.CTkFrame(root)
 
-controlButton = ctk.CTkButton(homeFrame, text="", image=controlIcon, height=150, width=170, font=("segoe ui light", 40), command=lambda:show_frame(controlFrame))
+controlButton = ctk.CTkButton(homeFrame, text="", image=controlIcon, height=150, width=170, font=("segoe ui light", 40), command=lambda:(show_frame(controlFrame), updateWeather()))
 controlButton.place(relx = 0.275, rely = 0.38, anchor=CENTER)
-weatherButton = ctk.CTkButton(homeFrame, image=cloudyIcon, text="", height=150, width=170,font=("segoe ui light", 40), command=lambda:show_frame(weatherFrame))
+weatherButton = ctk.CTkButton(homeFrame, image=weatherIcon, text="", height=150, width=170,font=("segoe ui light", 40), command=lambda:(show_frame(weatherFrame), updateWeather()))
 weatherButton.place(relx = 0.5, rely = 0.38, anchor=CENTER)
-settingsButton = ctk.CTkButton(homeFrame, text="", image=settingsIcon, height=150,width=170, font=("segoe ui light", 40), command=lambda:show_frame(settingsFrame))
+settingsButton = ctk.CTkButton(homeFrame, text="", image=settingsIcon, height=150,width=170, font=("segoe ui light", 40), command=lambda:(show_frame(settingsFrame), updateWeather()))
 settingsButton.place(relx = 0.725, rely = 0.38, anchor=CENTER)
-alarmButton = ctk.CTkButton(homeFrame, text="", image=clockIcon, height=150,width=170, font=("segoe ui light", 40), command=lambda:show_frame(clockFrame))
+alarmButton = ctk.CTkButton(homeFrame, text="", image=clockIcon, height=150,width=170, font=("segoe ui light", 40), command=lambda:(show_frame(clockFrame), updateWeather()))
 alarmButton.place(relx = 0.725, rely = 0.72, anchor=CENTER)
 musicButton = ctk.CTkButton(homeFrame, text="", image=musicIcon, height=150,width=170, font=("segoe ui light", 40))
 musicButton.place(relx = 0.5, rely = 0.72, anchor=CENTER)
-appsButton = ctk.CTkButton(homeFrame, text="", image=gridIcon, height=150,width=170, font=("segoe ui light", 40), command=lambda:show_frame(appsFrame))
+appsButton = ctk.CTkButton(homeFrame, text="", image=gridIcon, height=150,width=170, font=("segoe ui light", 40), command=lambda:(show_frame(appsFrame), updateWeather()))
 appsButton.place(relx = 0.275, rely = 0.72, anchor=CENTER)
 weatherLabel = ctk.CTkLabel(homeFrame, text=str(currentTemp) + "°", font=("segoe ui light", 60))
 weatherLabel.place(relx = 0.085, rely = 0.1, anchor="c")
@@ -96,7 +133,7 @@ timeLabel.place(relx=0.9, rely=0.1, anchor="c")
 controlFrame = ctk.CTkFrame(root)
 timeLabelCtrl = ctk.CTkLabel(controlFrame, text="", font=("segoe ui light", 30))
 timeLabelCtrl.place(relx=0.9, rely=0.1, anchor="c")
-homeButtonCtrl = ctk.CTkButton(controlFrame, image=homeIcon, text="", height=52,width=52, command=lambda:show_frame(homeFrame))
+homeButtonCtrl = ctk.CTkButton(controlFrame, image=homeIcon, text="", height=52,width=52, command=lambda:(show_frame(homeFrame), updateWeather()))
 homeButtonCtrl.place(relx=0.06, rely=0.1)
 
 weatherFrame = ctk.CTkFrame(root)
@@ -136,6 +173,7 @@ homeButtonClk.place(relx = 0.06, rely = 0.1)
 
 
 update_time()
+updateWeather()
 
 frames = [homeFrame, controlFrame, weatherFrame, settingsFrame, appsFrame, clockFrame]
 

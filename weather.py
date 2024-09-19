@@ -15,7 +15,7 @@ url = "https://api.open-meteo.com/v1/forecast"
 params = {
 	"latitude": 43.7979,
 	"longitude": -79.4695,
-	"current": ["temperature_2m", "apparent_temperature", "is_day", "precipitation", "rain", "snowfall", "wind_speed_10m"],
+	"current": ["temperature_2m", "apparent_temperature", "is_day", "precipitation", "rain", "snowfall", "wind_speed_10m", "cloud_cover"],
 	"hourly": ["temperature_2m", "rain", "showers", "cloud_cover", "wind_speed_10m", "is_day"],
 	"daily": ["temperature_2m_max", "temperature_2m_min", "sunrise", "sunset", "precipitation_sum", "rain_sum", "precipitation_hours", "precipitation_probability_max", "wind_speed_10m_max"],
 	"timezone": "America/New_York",
@@ -40,6 +40,7 @@ current_precipitation = current.Variables(3).Value()
 current_rain = current.Variables(4).Value()
 current_snowfall = current.Variables(5).Value()
 current_wind_speed_10m = current.Variables(6).Value()
+current_cloud_cover = current.Variables(7).Value()
 
 print(f"Current time {current.Time()}")
 print(f"Current temperature_2m {current_temperature_2m}")
