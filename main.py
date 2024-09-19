@@ -8,7 +8,6 @@ import time
 import asyncio
 import imagetk
 from PIL import Image, ImageTk
-
 #REMEMBER TO UPDATE PIP IF NOT ALREADY DONE
 
 ctk.set_appearance_mode("dark")
@@ -52,25 +51,25 @@ root.geometry("800x480")
 currentTemp = round(w.current_temperature_2m)
 currentAppTemp = round(w.current_apparent_temperature)
 
-cloudyIconIm = Image.open("C:/Users/jskor/PycharmProjects/jarps/cloud.png")
+cloudyIconIm = Image.open("icon/cloud.png")
 cloudyIcon = ImageTk.PhotoImage(cloudyIconIm)
-settingsIconIm = Image.open("C:/Users/jskor/PycharmProjects/jarps/settings.png")
+settingsIconIm = Image.open("icon/settings.png")
 settingsIcon = ImageTk.PhotoImage(settingsIconIm)
-clockIconIm = Image.open("C:/Users/jskor/PycharmProjects/jarps/clock.png")
+clockIconIm = Image.open("icon/clock.png")
 clockIcon = ImageTk.PhotoImage(clockIconIm)
-musicIconIm = Image.open("C:/Users/jskor/PycharmProjects/jarps/music.png")
+musicIconIm = Image.open("icon/music.png")
 musicIcon = ImageTk.PhotoImage(musicIconIm)
-controlIconIm = Image.open("C:/Users/jskor/PycharmProjects/jarps/sliders.png")
+controlIconIm = Image.open("icon/sliders.png")
 controlIcon = ImageTk.PhotoImage(controlIconIm)
-gridIconIm = Image.open("C:/Users/jskor/PycharmProjects/jarps/grid.png")
+gridIconIm = Image.open("icon/grid.png")
 gridIcon = ImageTk.PhotoImage(gridIconIm)
-youtubeIconIm = Image.open("C:/Users/jskor/PycharmProjects/jarps/youtube.png")
+youtubeIconIm = Image.open("icon/youtube.png")
 youtubeIcon = ImageTk.PhotoImage(youtubeIconIm)
-usersIconIm = Image.open("C:/Users/jskor/PycharmProjects/jarps/users.png")
+usersIconIm = Image.open("icon/users.png")
 usersIcon = ImageTk.PhotoImage(usersIconIm)
-monitorIconIm = Image.open("C:/Users/jskor/PycharmProjects/jarps/monitor.png")
+monitorIconIm = Image.open("icon/monitor.png")
 monitorIcon = ImageTk.PhotoImage(monitorIconIm)
-homeIconIm = Image.open("C:/Users/jskor/PycharmProjects/jarps/smallHome.png")
+homeIconIm = Image.open("icon/smallHome.png")
 homeIcon = ImageTk.PhotoImage(homeIconIm)
 
 #home frame
@@ -116,6 +115,8 @@ settingsFrame = ctk.CTkFrame(root)
 homeButtonStgs = ctk.CTkButton(settingsFrame, text="", image=homeIcon, height=52, width=52, command=lambda:show_frame(homeFrame))
 homeButtonStgs.place(relx = 0.06, rely = 0.1)
 
+settingsMainFrame = ctk.CTkScrollableFrame(root)
+
 appsFrame = ctk.CTkFrame(root)
 guestModeButton = ctk.CTkButton(appsFrame, text="", image=usersIcon, height=150, width=150)
 guestModeButton.place(relx = 0.275, rely=0.3, anchor=CENTER)
@@ -132,6 +133,7 @@ timeLabelClk = ctk.CTkLabel(clockFrame, text="", font=("segoe ui light",180))
 timeLabelClk.place(relx = 0.5, rely = 0.3, anchor=CENTER)
 homeButtonClk = ctk.CTkButton(clockFrame, text="", image=homeIcon, height=52, width=52, command=lambda:show_frame(homeFrame))
 homeButtonClk.place(relx = 0.06, rely = 0.1)
+
 
 update_time()
 
