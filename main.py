@@ -1,3 +1,5 @@
+from django.utils.termcolors import foreground
+
 import weather as w
 import sys
 import tkinter as tk
@@ -34,10 +36,6 @@ def update_time():
     root.after(1000, update_time)
 
 
-
-
-
-
 #def update_hours():
     #current_hours = time.strftime("%H", time.localtime())
    #hourLabel.configure(text=current_hours)
@@ -48,14 +46,8 @@ drizzle = False
 cloudy = False
 sunny = False
 
-
-
-
-
 root = ctk.CTk()
 root.geometry("800x480")
-
-
 
 currentTemp = round(w.current_temperature_2m)
 currentAppTemp = round(w.current_apparent_temperature)
@@ -82,7 +74,6 @@ homeIconIm = Image.open("icon/smallHome.png")
 homeIcon = ImageTk.PhotoImage(homeIconIm)
 
 def updateWeather():
-
     rainy = False
     drizzle = False
     cloudy = False
@@ -96,16 +87,17 @@ def updateWeather():
     elif w.current_rain > 0.1:
         rainy = True
     print(rainy, drizzle, cloudy, clear)
+
     if clear:
         weatherIconIm = Image.open("icon/sun.png")
         weatherIcon = ImageTk.PhotoImage(weatherIconIm)
-    elif cloudy:
+    if cloudy:
         weatherIconIm = Image.open("icon/cloud.png")
         weatherIcon = ImageTk.PhotoImage(weatherIconIm)
-    elif drizzle:
+    if drizzle:
         weatherIconIm = Image.open("icon/cloud-drizzle.png")
         weatherIcon = ImageTk.PhotoImage(weatherIconIm)
-    elif rainy:
+    if rainy:
         weatherIconIm = Image.open("icon/cloud-rain.png")
         weatherIcon = ImageTk.PhotoImage(weatherIconIm)
 
@@ -152,17 +144,21 @@ settingsFrame = ctk.CTkFrame(root)
 homeButtonStgs = ctk.CTkButton(settingsFrame, text="", image=homeIcon, height=52, width=52, command=lambda:show_frame(homeFrame))
 homeButtonStgs.place(relx = 0.06, rely = 0.1)
 
-settingsMainFrame = ctk.CTkScrollableFrame(root)
+
 
 appsFrame = ctk.CTkFrame(root)
-guestModeButton = ctk.CTkButton(appsFrame, text="", image=usersIcon, height=150, width=150)
-guestModeButton.place(relx = 0.275, rely=0.3, anchor=CENTER)
-desktopModeButton = ctk.CTkButton(appsFrame, text="", image=monitorIcon, height=150, width=150)
-desktopModeButton.place(relx = 0.5, rely=0.3, anchor=CENTER)
-youtubeButton = ctk.CTkButton(appsFrame, text="", image=youtubeIcon, height=150, width=150)
-youtubeButton.place(relx = 0.725, rely=0.3, anchor=CENTER)
 homeButtonApps = ctk.CTkButton(appsFrame, text="", image=homeIcon, height=52, width=52, command=lambda:show_frame(homeFrame))
 homeButtonApps.place(relx = 0.06, rely = 0.1)
+guestModeButton = ctk.CTkButton(appsFrame, text="", image=usersIcon, height=150, width=150)
+guestModeButton.place(relx = 0.275, rely=0.175, anchor=CENTER)
+desktopModeButton = ctk.CTkButton(appsFrame, text="", image=monitorIcon, height=150, width=150)
+desktopModeButton.place(relx = 0.5, rely=0.175, anchor=CENTER)
+youtubeButton = ctk.CTkButton(appsFrame, text="", image=youtubeIcon, height=150, width=150)
+youtubeButton.place(relx = 0.725, rely=0.175, anchor=CENTER)
+musicButtonApps = ctk.CTkButton(appsFrame, text="", image=musicIcon, height=150, width=150)
+musicButtonApps.place(relx = 0.275, rely = 0.5, anchor=CENTER)
+
+appsScrollFrame = ctk.CTkScrollableFrame
 
 
 clockFrame = ctk.CTkFrame(root)
