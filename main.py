@@ -17,39 +17,18 @@ def update_time():
 
 
      #Call this function again after 1000 ms (1 second)
-    root.after(1000, update_time)
+    app.after(1000, update_time)
 
 rainy = False
 drizzle = False
 cloudy = False
 sunny = False
 
-root = ctk.CTk()
-root.geometry("800x480")
 
 currentTemp = round(w.current_temperature_2m)
 currentAppTemp = round(w.current_apparent_temperature)
 
-weatherIconIm = Image.open("icon/cloud-rain.png")
-weatherIcon = ImageTk.PhotoImage(weatherIconIm)
-settingsIconIm = Image.open("icon/settings.png")
-settingsIcon = ImageTk.PhotoImage(settingsIconIm)
-clockIconIm = Image.open("icon/clock.png")
-clockIcon = ImageTk.PhotoImage(clockIconIm)
-musicIconIm = Image.open("icon/music.png")
-musicIcon = ImageTk.PhotoImage(musicIconIm)
-controlIconIm = Image.open("icon/sliders.png")
-controlIcon = ImageTk.PhotoImage(controlIconIm)
-gridIconIm = Image.open("icon/grid.png")
-gridIcon = ImageTk.PhotoImage(gridIconIm)
-youtubeIconIm = Image.open("icon/youtube.png")
-youtubeIcon = ImageTk.PhotoImage(youtubeIconIm)
-usersIconIm = Image.open("icon/users.png")
-usersIcon = ImageTk.PhotoImage(usersIconIm)
-monitorIconIm = Image.open("icon/monitor.png")
-monitorIcon = ImageTk.PhotoImage(monitorIconIm)
-homeIconIm = Image.open("icon/smallHome.png")
-homeIcon = ImageTk.PhotoImage(homeIconIm)
+
 
 
 
@@ -84,8 +63,7 @@ def updateWeather():
 class app(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.grid_rowconfigure(0, weight=0)
-        self.grid_columnconfigure(0, weight=0)
+        self.geometry("800x480")
         self.show_frame(homeFrame1)
     update_time()
     updateWeather()
@@ -93,6 +71,27 @@ class app(ctk.CTk):
         for frame in frames:
             frame.pack_forget()
         frame_to_show.pack(fill="both", expand=True)
+
+weatherIconIm = Image.open("icon/cloud-rain.png")
+weatherIcon = ImageTk.PhotoImage(weatherIconIm)
+settingsIconIm = Image.open("icon/settings.png")
+settingsIcon = ImageTk.PhotoImage(settingsIconIm)
+clockIconIm = Image.open("icon/clock.png")
+clockIcon = ImageTk.PhotoImage(clockIconIm)
+musicIconIm = Image.open("icon/music.png")
+musicIcon = ImageTk.PhotoImage(musicIconIm)
+controlIconIm = Image.open("icon/sliders.png")
+controlIcon = ImageTk.PhotoImage(controlIconIm)
+gridIconIm = Image.open("icon/grid.png")
+gridIcon = ImageTk.PhotoImage(gridIconIm)
+youtubeIconIm = Image.open("icon/youtube.png")
+youtubeIcon = ImageTk.PhotoImage(youtubeIconIm)
+usersIconIm = Image.open("icon/users.png")
+usersIcon = ImageTk.PhotoImage(usersIconIm)
+monitorIconIm = Image.open("icon/monitor.png")
+monitorIcon = ImageTk.PhotoImage(monitorIconIm)
+homeIconIm = Image.open("icon/smallHome.png")
+homeIcon = ImageTk.PhotoImage(homeIconIm)
 
 class homeFrame(ctk.CTkFrame):
     def __init__(self, root, **kwargs):
@@ -127,7 +126,7 @@ class homeFrame(ctk.CTkFrame):
         self.timeLabel = ctk.CTkLabel(hFrame, text="", font=("segoe ui light", 30))
         self.timeLabel.place(relx=0.9, rely=0.1, anchor="c")
 
-homeFrame1 = homeFrame(root)
+homeFrame1 = homeFrame(app)
 
 class controlFrame(ctk.CTkFrame):
     def __init__(self, root, **kwargs):
@@ -139,7 +138,7 @@ class controlFrame(ctk.CTkFrame):
                                        command=lambda: (app.show_frame(homeFrame), updateWeather()))
         homeButtonCtrl.place(relx=0.06, rely=0.1)
 
-controlFrame1 = controlFrame(root)
+controlFrame1 = controlFrame(app)
 
 class weatherFrame(ctk.CTkFrame):
     def __init__(self, root, **kwargs):
@@ -156,9 +155,9 @@ class weatherFrame(ctk.CTkFrame):
                                        command=lambda: app.show_frame(homeFrame))
         homeButtonWthr.place(relx=0.06, rely=0.1)
 
-weatherFrame1 = weatherFrame(root)
+weatherFrame1 = weatherFrame(app)
 
-settingsFrame = ctk.CTkFrame(root)
+settingsFrame = ctk.CTkFrame(app)
 
 homeButtonStgs = ctk.CTkButton(settingsFrame, text="", image=homeIcon, height=52, width=52, command=lambda:app.show_frame(homeFrame))
 homeButtonStgs.place(relx = 0.06, rely = 0.1)
@@ -178,11 +177,11 @@ class appsFrame(ctk.CTkFrame):
         musicButtonApps = ctk.CTkButton(aFrame, text="", image=musicIcon, height=150, width=150)
         musicButtonApps.place(relx=0.275, rely=0.5, anchor=CENTER)
 
-appsFrame1 = appsFrame(root)
+appsFrame1 = appsFrame(app)
 
 appsScrollFrame = ctk.CTkScrollableFrame
 
-clockFrame = ctk.CTkFrame(root)
+clockFrame = ctk.CTkFrame(app)
 timeLabelClk = ctk.CTkLabel(clockFrame, text="", font=("segoe ui light",180))
 timeLabelClk.place(relx = 0.5, rely = 0.3, anchor=CENTER)
 homeButtonClk = ctk.CTkButton(clockFrame, text="", image=homeIcon, height=52, width=52, command=lambda:app.show_frame(homeFrame))
@@ -191,6 +190,6 @@ homeButtonClk.place(relx = 0.06, rely = 0.1)
 frames = [homeFrame1, controlFrame1, weatherFrame1, appsFrame1,]
 
 if __name__ == "__main__":
-    root = app()
-    root.mainloop()
+    app = app()
+    app.mainloop()
 
