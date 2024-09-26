@@ -4,7 +4,6 @@ import customtkinter as ctk
 import time
 from PIL import Image, ImageTk
 
-from main2notused import settingsIcon
 
 # Set appearance mode and color theme
 ctk.set_appearance_mode("dark")
@@ -50,6 +49,7 @@ def updateWeather():
 
     global weatherIcon
     weatherIcon = ImageTk.PhotoImage(weatherIconIm)
+    print(clear, cloudy, drizzle, rainy)
 
 
 class App(ctk.CTk):
@@ -61,7 +61,7 @@ class App(ctk.CTk):
         # Load icons here, after the main window is created
         self.load_icons()
 
-        for F in (HomeFrame, ControlFrame, WeatherFrame, AppsFrame):
+        for F in (HomeFrame, ControlFrame, WeatherFrame, AppsFrame, SettingsFrame):
             frame = F(self)  # Pass app instance
             self.frames[F] = frame
             frame.place(relwidth=1, relheight=1)  # Use place for layout management
@@ -102,7 +102,10 @@ class HomeFrame(ctk.CTkFrame):
                                       command=lambda: (app.show_frame(WeatherFrame), updateWeather()))
         weatherButton.place(relx=0.5, rely=0.38, anchor=CENTER)
 
-          # Removed this line or comment it out
+        settingsButton = ctk.CTkButton(self, text="", image=settingsIcon, height=150, width=170,
+                                       font=("segoe ui light", 40),
+                                       command=lambda: (app.show_frame(SettingsFrame), updateWeather()))
+        settingsButton.place(relx = 0.725, rely = 0.38, anchor=CENTER)
 
 
         alarmButton = ctk.CTkButton(self, text="", image=clockIcon, height=150, width=170,
@@ -156,8 +159,44 @@ class WeatherFrame(ctk.CTkFrame):
 class SettingsFrame(ctk.CTkFrame):
     def __init__(self, root, **kwargs):
         super().__init__(root, **kwargs)
-        homeButtonStgs = ctk.CTkButton(self, text="", image=settingsIcon, height=52, width=52, command=lambda:app.show_frame(HomeFrame))
-        homeButtonStgs.place(relx = 0.06, rely=0.1, anchor=CENTER)
+
+        # Create a scrollable frame
+        self.scrollable_frame = ctk.CTkScrollableFrame(self, width=400, height=400)
+        self.scrollable_frame.pack(fill=BOTH, expand=True)
+
+        # Example settings content
+        for i in range(20):  # Add some dummy settings for demonstration
+            setting_label = ctk.CTkLabel(self.scrollable_frame, text=f"Setting {i + 1}", font=("segoe ui light", 20))
+            setting_label.pack(pady=5)
+
+        # Add a back button
+        back_button = ctk.CTkButton(self, text="Back", command=lambda: app.show_frame(HomeFrame))
+        back_button.pack(pady=20)
+
+        # Bind mouse events for dragging to scroll
+        self.bind("<ButtonPress-1>", self.start_scroll)
+        self.bind("<B1-Motion>", self.do_scroll)
+        self.bind("<ButtonRelease-1>", self.end_scroll)
+
+        # Initialize variables for dragging
+        self.prev_y = None
+
+    def start_scroll(self, event):
+        """Store the initial position when mouse button is pressed."""
+        self.prev_y = event.y
+
+    def do_scroll(self, event):
+        """Scroll the frame based on mouse movement."""
+        if self.prev_y is not None:
+            delta_y = self.prev_y - event.y
+            self.scrollable_frame.yview_scroll(int(delta_y / 20), "units")  # Adjust the divisor for scroll speed
+            self.prev_y = event.y
+
+    def end_scroll(self, event):
+        """Reset the previous y position when mouse button is released."""
+        self.prev_y = None
+
+
 
 class AppsFrame(ctk.CTkFrame):
     def __init__(self, root, **kwargs):
