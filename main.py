@@ -4,17 +4,14 @@ import customtkinter as ctk
 import time
 from PIL import Image, ImageTk
 
-
 # Set appearance mode and color theme
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
-
 
 def update_time():
     current_time = time.strftime("%H:%M", time.localtime())
     current_seconds = time.strftime("%S", time.localtime())
     app.after(1000, update_time)
-
 
 # Weather conditions
 rainy = False
@@ -24,7 +21,6 @@ sunny = False
 
 currentTemp = round(w.current_temperature_2m)
 currentAppTemp = round(w.current_apparent_temperature)
-
 
 def updateWeather():
     global rainy, drizzle, cloudy, clear
@@ -50,7 +46,6 @@ def updateWeather():
     global weatherIcon
     weatherIcon = ImageTk.PhotoImage(weatherIconIm)
     print(clear, cloudy, drizzle, rainy)
-
 
 class App(ctk.CTk):
     def __init__(self):
@@ -160,26 +155,35 @@ class SettingsFrame(ctk.CTkFrame):
     def __init__(self, root, **kwargs):
         super().__init__(root, **kwargs)
 
-        # Create a scrollable frame
-        self.scrollable_frame = ctk.CTkScrollableFrame(self, width=400, height=400)
-        self.scrollable_frame.pack(fill=BOTH, expand=True)
+        # Create a scrollable frame for settings
+        self.scrollable_frame = ctk.CTkScrollableFrame(self, height=400)
+        self.scrollable_frame.pack(fill="both", expand=True)
 
-        # Example settings content
-        for i in range(20):  # Add some dummy settings for demonstration
-            setting_label = ctk.CTkLabel(self.scrollable_frame, text=f"Setting {i + 1}", font=("segoe ui light", 20))
-            setting_label.pack(pady=5)
+        # Add toggle switches to the scrollable frame
+        self.toggle_var1 = ctk.StringVar(value="off")
+        self.toggle_var2 = ctk.StringVar(value="off")
+        self.toggle_var3 = ctk.StringVar(value="off")
 
-        # Add a back button
-        back_button = ctk.CTkButton(self, text="Back", command=lambda: app.show_frame(HomeFrame))
-        back_button.pack(pady=20)
+        # Toggle Switch 1
+        self.toggle1 = ctk.CTkSwitch(self.scrollable_frame, text="Setting 1", variable=self.toggle_var1, font=("segoe ui light", 30)
+                                     , width=30)
+        self.toggle1.pack(pady=10)
 
-        # Bind mouse events for dragging to scroll
-        self.bind("<ButtonPress-1>", self.start_scroll)
-        self.bind("<B1-Motion>", self.do_scroll)
-        self.bind("<ButtonRelease-1>", self.end_scroll)
+        # Toggle Switch 2
+        self.toggle2 = ctk.CTkSwitch(self.scrollable_frame, text="Setting 2", variable=self.toggle_var2, font=("segoe ui light", 30)
+                                     , width=30)
+        self.toggle2.pack(pady=10)
 
-        # Initialize variables for dragging
-        self.prev_y = None
+        # Toggle Switch 3
+        self.toggle3 = ctk.CTkSwitch(self.scrollable_frame, text="Setting 3", variable=self.toggle_var3, font=("segoe ui light", 30)
+                                     , width=30)
+        self.toggle3.pack(pady=10)
+
+        # Add a home button
+        homeButtonStgs = ctk.CTkButton(self.scrollable_frame, text="", image=homeIcon, height=52, width=52,
+                                        command=lambda: app.show_frame(HomeFrame))
+        homeButtonStgs.pack(side="top", anchor="nw", padx=10, pady=10)
+
 
     def start_scroll(self, event):
         """Store the initial position when mouse button is pressed."""
