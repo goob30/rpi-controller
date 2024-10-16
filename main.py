@@ -5,7 +5,7 @@ import time
 import rpi
 from PIL import Image, ImageTk
 
-# Set appearance mode and color theme
+
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
@@ -16,7 +16,6 @@ def update_time():
     app.after(1000, update_time)
 
 
-# Weather conditions
 rainy = False
 drizzle = False
 cloudy = False
@@ -24,47 +23,22 @@ sunny = False
 
 font = "segoeuil"
 
-heaterMotorPos = 0
+heaterMotorPos = 4
 controlFrameHeaterText = ""
 
 def heaterMotor():
     global heaterMotorPos
     global controlFrameHeaterText
     heaterMotorPos += 1
-    heaterMotorPos = heaterMotorPos % 3
+    heaterMotorPos = heaterMotorPos % 4
 
     controlFrameHeaterText = f"Heater\n{heaterMotorPos}"
     print(controlFrameHeaterText)
 
+heaterMotor()
 
 currentTemp = round(w.current_temperature_2m)
 currentAppTemp = round(w.current_apparent_temperature)
-
-
-def updateWeather():
-    global rainy, drizzle, cloudy, clear
-    rainy = drizzle = cloudy = clear = False
-    if w.current_cloud_cover < 50:
-        clear = True
-    elif w.current_cloud_cover > 50:
-        cloudy = True
-    elif w.current_rain < 0.1:
-        drizzle = True
-    elif w.current_rain > 0.1:
-        rainy = True
-
-    if clear:
-        weatherIconIm = Image.open("icon/sun.png")
-    elif cloudy:
-        weatherIconIm = Image.open("icon/cloud.png")
-    elif drizzle:
-        weatherIconIm = Image.open("icon/cloud-drizzle.png")
-    elif rainy:
-        weatherIconIm = Image.open("icon/cloud-rain.png")
-
-    global weatherIcon
-    weatherIcon = ImageTk.PhotoImage(weatherIconIm)
-    print(clear, cloudy, drizzle, rainy)
 
 
 class App(ctk.CTk):
@@ -76,7 +50,7 @@ class App(ctk.CTk):
         # Load icons here, after the main window is created
         self.load_icons()
 
-        for F in (HomeFrame, ControlFrame, WeatherFrame, AppsFrame, SettingsFrame):
+        for F in (HomeFrame, ControlFrame, lightControlFrame, roomControlFrame, climControlFrame, WeatherFrame, AppsFrame, SettingsFrame):
             frame = F(self)  # Pass app instance
             self.frames[F] = frame
             frame.place(relwidth=1, relheight=1)  # Use place for layout management
@@ -85,7 +59,7 @@ class App(ctk.CTk):
 
     def load_icons(self):
         global homeIcon, controlIcon, weatherIcon, settingsIcon
-        global clockIcon, musicIcon, gridIcon, youtubeIcon, usersIcon, monitorIcon
+        global clockIcon, musicIcon, gridIcon, youtubeIcon, usersIcon, monitorIcon, sunIcon, cloudyIcon, drizzleIcon, rainIcon, thermIcon
 
         homeIcon = ImageTk.PhotoImage(Image.open("icon/smallHome.png"))
         controlIcon = ImageTk.PhotoImage(Image.open("icon/sliders.png"))
@@ -97,11 +71,39 @@ class App(ctk.CTk):
         youtubeIcon = ImageTk.PhotoImage(Image.open("icon/youtube.png"))
         usersIcon = ImageTk.PhotoImage(Image.open("icon/users.png"))
         monitorIcon = ImageTk.PhotoImage(Image.open("icon/monitor.png"))
+        sunIcon = ImageTk.PhotoImage(Image.open("icon/sun.png"))
+        cloudyIcon = ImageTk.PhotoImage(Image.open("icon/cloud.png"))
+        drizzleIcon = ImageTk.PhotoImage(Image.open("icon/cloud-drizzle.png"))
+        rainIcon = ImageTk.PhotoImage(Image.open("icon/cloud-rain.png"))
+        thermIcon = ImageTk.PhotoImage(Image.open("icon/thermometer.png"))
 
     def show_frame(self, frame_class):
         frame = self.frames[frame_class]
         frame.tkraise()  # Bring the selected frame to the front
 
+def updateWeather():
+    global rainy, drizzle, cloudy, clear
+    global weatherIcon
+    rainy = drizzle = cloudy = clear = False
+    if w.current_cloud_cover < 50:
+        clear = True
+    elif w.current_cloud_cover > 50:
+        cloudy = True
+    elif w.current_rain < 0.1:
+        drizzle = True
+    elif w.current_rain > 0.1:
+        rainy = True
+
+    if clear:
+        weatherIcon = sunIcon
+    elif cloudy:
+        weatherIcon = cloudyIcon
+    elif drizzle:
+        weatherIcon = drizzleIcon
+    elif rainy:
+        weatherIcon = rainIcon
+
+    print(clear, cloudy, drizzle, rainy)
 
 class HomeFrame(ctk.CTkFrame):
     def __init__(self, root, **kwargs):
@@ -153,34 +155,66 @@ class ControlFrame(ctk.CTkFrame):
                                         command=lambda: (app.show_frame(HomeFrame)))
         self.homeButton.place(relx=0.06, rely=0.1)
 
-        self.potLightButton = ctk.CTkButton(self, text="Pot\nLights", height=150, width=170,
-                                            font=("segoe ui light", 40),
-                                            command=lambda: ())
-        self.potLightButton.place(relx=0.275, rely=0.38, anchor=CENTER)
+        self.lightButton = ctk.CTkButton(self, text="", image=sunIcon, height = 400, width=170, command=lambda:(app.show_frame(lightControlFrame)))
+        self.lightButton.place(relx = 0.275, rely = 0.5, anchor=CENTER)
 
-        self.ledButton = ctk.CTkButton(self, text="Room\nLED", height=150, width=170,
-                                       font=("segoe ui light", 40),
-                                       command=lambda: (updateWeather()))
-        self.ledButton.place(relx=0.5, rely=0.38, anchor=CENTER)
+        self.roomButton = ctk.CTkButton(self, text="", image=controlIcon, height = 400, width=170, command=lambda:(app.show_frame(roomControlFrame)))
+        self.roomButton.place(relx = 0.5, rely = 0.5, anchor=CENTER)
 
-        self.fanButton = ctk.CTkButton(self, text="Fan\nControl", height=150, width=170,
-                                       font=("segoe ui light", 40),
-                                       command=lambda: (updateWeather()))
-        self.fanButton.place(relx=0.725, rely=0.38, anchor=CENTER)
+        self.climButton = ctk.CTkButton(self, text="", image=thermIcon, height=400, width=170, command=lambda:(app.show_frame(climControlFrame)))
+        self.climButton.place(relx=0.725, rely=0.5, anchor=CENTER)
 
-        self.heaterButton = ctk.CTkButton(self, text=f"{controlFrameHeaterText}", height=150, width=170,
-                                          font=("segoe ui light", 40),
-                                          command=lambda: (heaterMotor()))
-        self.heaterButton.place(relx=0.725, rely=0.72, anchor=CENTER)
+        #
+        # self.potLightButton = ctk.CTkButton(self, text="Pot\nLights", height=150, width=170,
+        #                                     font=("segoe ui light", 40),
+        #                                     command=lambda: ())
+        # self.potLightButton.place(relx=0.275, rely=0.38, anchor=CENTER)
+        #
+        # self.ledButton = ctk.CTkButton(self, text="Room\nLED", height=150, width=170,
+        #                                font=("segoe ui light", 40),
+        #                                command=lambda: (updateWeather()))
+        # self.ledButton.place(relx=0.5, rely=0.38, anchor=CENTER)
+        #
+        # self.fanButton = ctk.CTkButton(self, text="Fan\nControl", height=150, width=170,
+        #                                font=("segoe ui light", 40),
+        #                                command=lambda: (updateWeather()))
+        # self.fanButton.place(relx=0.725, rely=0.38, anchor=CENTER)
+        #
+        # self.heaterButton = ctk.CTkButton(self, text=controlFrameHeaterText, height=150, width=170,
+        #                                   font=("segoe ui light", 40),
+        #                                   command=lambda: (heaterMotor()))
+        # self.heaterButton.place(relx=0.725, rely=0.72, anchor=CENTER)
+        #
+        # self.projectorButton = ctk.CTkButton(self, text="Toggle\nProjector", height=150, width=170,
+        #                                      font=("segoe ui light", 40))
+        # self.projectorButton.place(relx=0.5, rely=0.72, anchor=CENTER)
+        #
+        # self.bedLightButton = ctk.CTkButton(self, text="Bed\nLights", height=150, width=170,
+        #                                     font=("segoe ui light", 40),
+        #                                     command=lambda: ())
+        # self.bedLightButton.place(relx=0.275, rely=0.72, anchor=CENTER)
 
-        self.projectorButton = ctk.CTkButton(self, text="Toggle\nProjector", height=150, width=170,
-                                             font=("segoe ui light", 40))
-        self.projectorButton.place(relx=0.5, rely=0.72, anchor=CENTER)
+class lightControlFrame(ctk.CTkFrame):
+    def __init__(self, root, **kwargs):
+        super().__init__(root, **kwargs)
+        self.homeButton = ctk.CTkButton(self, text="", image=homeIcon, height=52, width=52,
+                                       command=lambda: app.show_frame(HomeFrame))
+        self.homeButton.place(relx=0.06, rely=0.1)
 
-        self.bedLightButton = ctk.CTkButton(self, text="Bed\nLights", height=150, width=170,
-                                            font=("segoe ui light", 40),
-                                            command=lambda: ())
-        self.bedLightButton.place(relx=0.275, rely=0.72, anchor=CENTER)
+
+class roomControlFrame(ctk.CTkFrame):
+    def __init__(self, root, **kwargs):
+        super().__init__(root, **kwargs)
+        self.homeButton = ctk.CTkButton(self, text="", image=homeIcon, height=52, width=52,
+                                        command=lambda: app.show_frame(HomeFrame))
+        self.homeButton.place(relx=0.06, rely=0.1)
+
+class climControlFrame(ctk.CTkFrame):
+    def __init__(self, root, **kwargs):
+        super().__init__(root, **kwargs)
+        self.homeButton = ctk.CTkButton(self, text="", image=homeIcon, height=52, width=52,
+                                        command=lambda: app.show_frame(HomeFrame))
+        self.homeButton.place(relx=0.06, rely=0.1)
 
 
 class WeatherFrame(ctk.CTkFrame):
