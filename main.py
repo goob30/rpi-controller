@@ -2,16 +2,19 @@ import weather as w
 from tkinter import *
 import customtkinter as ctk
 import time
+import rpi
 from PIL import Image, ImageTk
 
 # Set appearance mode and color theme
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
+
 def update_time():
     current_time = time.strftime("%H:%M", time.localtime())
     current_seconds = time.strftime("%S", time.localtime())
     app.after(1000, update_time)
+
 
 # Weather conditions
 rainy = False
@@ -19,8 +22,24 @@ drizzle = False
 cloudy = False
 sunny = False
 
+font = "segoeuil"
+
+heaterMotorPos = 0
+controlFrameHeaterText = ""
+
+def heaterMotor():
+    global heaterMotorPos
+    global controlFrameHeaterText
+    heaterMotorPos += 1
+    heaterMotorPos = heaterMotorPos % 3
+
+    controlFrameHeaterText = f"Heater\n{heaterMotorPos}"
+    print(controlFrameHeaterText)
+
+
 currentTemp = round(w.current_temperature_2m)
 currentAppTemp = round(w.current_apparent_temperature)
+
 
 def updateWeather():
     global rainy, drizzle, cloudy, clear
@@ -46,6 +65,7 @@ def updateWeather():
     global weatherIcon
     weatherIcon = ImageTk.PhotoImage(weatherIconIm)
     print(clear, cloudy, drizzle, rainy)
+
 
 class App(ctk.CTk):
     def __init__(self):
@@ -100,8 +120,7 @@ class HomeFrame(ctk.CTkFrame):
         settingsButton = ctk.CTkButton(self, text="", image=settingsIcon, height=150, width=170,
                                        font=("segoe ui light", 40),
                                        command=lambda: (app.show_frame(SettingsFrame), updateWeather()))
-        settingsButton.place(relx = 0.725, rely = 0.38, anchor=CENTER)
-
+        settingsButton.place(relx=0.725, rely=0.38, anchor=CENTER)
 
         alarmButton = ctk.CTkButton(self, text="", image=clockIcon, height=150, width=170,
                                     font=("segoe ui light", 40),
@@ -128,12 +147,40 @@ class ControlFrame(ctk.CTkFrame):
     def __init__(self, root, **kwargs):
         super().__init__(root, **kwargs)
 
-        homeButtonCtrl = ctk.CTkButton(self, image=homeIcon, text="", height=52, width=52,
-                                       command=lambda: app.show_frame(HomeFrame))
-        homeButtonCtrl.place(relx=0.06, rely=0.1)
+        global controlFrameHeaterText
 
-        self.controlLabel = ctk.CTkLabel(self, text="Control Frame", font=("segoe ui light", 30))
-        self.controlLabel.place(relx=0.5, rely=0.5, anchor="center")
+        self.homeButton = ctk.CTkButton(self, image=homeIcon, text="", height=52, width=52,
+                                        command=lambda: (app.show_frame(HomeFrame)))
+        self.homeButton.place(relx=0.06, rely=0.1)
+
+        self.potLightButton = ctk.CTkButton(self, text="Pot\nLights", height=150, width=170,
+                                            font=("segoe ui light", 40),
+                                            command=lambda: ())
+        self.potLightButton.place(relx=0.275, rely=0.38, anchor=CENTER)
+
+        self.ledButton = ctk.CTkButton(self, text="Room\nLED", height=150, width=170,
+                                       font=("segoe ui light", 40),
+                                       command=lambda: (updateWeather()))
+        self.ledButton.place(relx=0.5, rely=0.38, anchor=CENTER)
+
+        self.fanButton = ctk.CTkButton(self, text="Fan\nControl", height=150, width=170,
+                                       font=("segoe ui light", 40),
+                                       command=lambda: (updateWeather()))
+        self.fanButton.place(relx=0.725, rely=0.38, anchor=CENTER)
+
+        self.heaterButton = ctk.CTkButton(self, text=f"{controlFrameHeaterText}", height=150, width=170,
+                                          font=("segoe ui light", 40),
+                                          command=lambda: (heaterMotor()))
+        self.heaterButton.place(relx=0.725, rely=0.72, anchor=CENTER)
+
+        self.projectorButton = ctk.CTkButton(self, text="Toggle\nProjector", height=150, width=170,
+                                             font=("segoe ui light", 40))
+        self.projectorButton.place(relx=0.5, rely=0.72, anchor=CENTER)
+
+        self.bedLightButton = ctk.CTkButton(self, text="Bed\nLights", height=150, width=170,
+                                            font=("segoe ui light", 40),
+                                            command=lambda: ())
+        self.bedLightButton.place(relx=0.275, rely=0.72, anchor=CENTER)
 
 
 class WeatherFrame(ctk.CTkFrame):
@@ -151,6 +198,7 @@ class WeatherFrame(ctk.CTkFrame):
                                     text_color="#e0e0e0")
         appTempLabel.place(relx=0.06, rely=0.575, anchor="w")
 
+
 class SettingsFrame(ctk.CTkFrame):
     def __init__(self, root, **kwargs):
         super().__init__(root, **kwargs)
@@ -165,25 +213,27 @@ class SettingsFrame(ctk.CTkFrame):
         self.toggle_var3 = ctk.StringVar(value="off")
 
         # Toggle Switch 1
-        self.toggle1 = ctk.CTkSwitch(self.scrollable_frame, text="Setting 1", variable=self.toggle_var1, font=("segoe ui light", 30)
+        self.toggle1 = ctk.CTkSwitch(self.scrollable_frame, text="Setting 1", variable=self.toggle_var1,
+                                     font=("segoe ui light", 30)
                                      , width=30)
         self.toggle1.pack(pady=10)
 
         # Toggle Switch 2
-        self.toggle2 = ctk.CTkSwitch(self.scrollable_frame, text="Setting 2", variable=self.toggle_var2, font=("segoe ui light", 30)
+        self.toggle2 = ctk.CTkSwitch(self.scrollable_frame, text="Setting 2", variable=self.toggle_var2,
+                                     font=("segoe ui light", 30)
                                      , width=30)
         self.toggle2.pack(pady=10)
 
         # Toggle Switch 3
-        self.toggle3 = ctk.CTkSwitch(self.scrollable_frame, text="Setting 3", variable=self.toggle_var3, font=("segoe ui light", 30)
+        self.toggle3 = ctk.CTkSwitch(self.scrollable_frame, text="Setting 3", variable=self.toggle_var3,
+                                     font=("segoe ui light", 30)
                                      , width=30)
         self.toggle3.pack(pady=10)
 
         # Add a home button
         homeButtonStgs = ctk.CTkButton(self.scrollable_frame, text="", image=homeIcon, height=52, width=52,
-                                        command=lambda: app.show_frame(HomeFrame))
+                                       command=lambda: app.show_frame(HomeFrame))
         homeButtonStgs.pack(side="top", anchor="nw", padx=10, pady=10)
-
 
     def start_scroll(self, event):
         """Store the initial position when mouse button is pressed."""
@@ -201,7 +251,6 @@ class SettingsFrame(ctk.CTkFrame):
         self.prev_y = None
 
 
-
 class AppsFrame(ctk.CTkFrame):
     def __init__(self, root, **kwargs):
         super().__init__(root, **kwargs)
@@ -210,7 +259,7 @@ class AppsFrame(ctk.CTkFrame):
                                        command=lambda: app.show_frame(HomeFrame))
         homeButtonApps.place(relx=0.06, rely=0.1)
 
-        guestModeButton = ctk.CTkButton(self, text="", image=usersIcon, height=150, width=150)
+        guestModeButton = ctk.CTkButton(self, text="", image=usersIcon, height=150, width=150, command=lambda: (exit()))
         guestModeButton.place(relx=0.275, rely=0.175, anchor=CENTER)
 
         desktopModeButton = ctk.CTkButton(self, text="", image=monitorIcon, height=150, width=150)
